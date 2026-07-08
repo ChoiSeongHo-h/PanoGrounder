@@ -1,0 +1,347 @@
+
+:root {
+  --accent: #6c5ce7;          
+  --accent-dark: #4b3fc4;     
+  --ink: #1d1d20;             
+  --muted: #6b6b73;           
+  --bg: #ffffff;
+}
+
+body,
+.title,
+.subtitle,
+.publication-title,
+.publication-authors,
+.content {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--bg);
+}
+
+.hero-body {
+  padding-top: 3.5rem;
+  padding-bottom: 2rem;
+}
+
+.publication-title {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  font-size: 2.4rem !important;
+  margin-bottom: 1.2rem !important;
+}
+
+.venue-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--accent-dark);
+  background: #efeaff;
+  padding: 5px 16px;
+  border-radius: 999px;
+  margin-bottom: 1.4rem;
+}
+
+.publication-authors {
+  margin-bottom: 0.4rem;
+  font-size: 1.15rem;
+}
+
+.author-block {
+  margin: 0 0.35rem;
+  white-space: nowrap;
+}
+
+.author-block a {
+  color: var(--ink);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.author-block a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.author-block sup {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.affiliations {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem !important;
+}
+
+.eq-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+}
+sup.eq { color: var(--accent); font-weight: 600; }
+
+.publication-links {
+  margin-top: 0.5rem;
+}
+
+.publication-links .button {
+  background: #232328;
+  border: none;
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 500;
+  padding: 1.1rem 1.4rem;
+  transition: transform 0.12s, background 0.15s;
+}
+.publication-links .button:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.publication-links .button.is-accent {
+  background: var(--accent);
+}
+.publication-links .button.is-accent:hover {
+  background: var(--accent-dark);
+}
+
+.teaser img {
+  border-radius: 14px;
+  max-width: 100%;
+}
+.teaser .subtitle {
+  margin-top: 1.2rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+/* Bulma's `.subtitle span { font-weight: inherit }` overrides .dnerf's bold; restore it */
+.subtitle .dnerf {
+  font-weight: 700;
+}
+
+.section .title.is-3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.9rem;
+  margin-bottom: 1.2rem;
+}
+.section .title.is-4 {
+  font-weight: 600;
+  color: var(--accent-dark);
+  font-size: 1.25rem;
+  margin-top: 2.0rem;
+  margin-bottom: 0.6rem;
+}
+
+.content {
+  font-size: 1.08rem;
+  line-height: 1.75;
+  color: #2c2c30;
+}
+.content b { color: inherit; }
+
+.dnerf {
+  font-weight: 700;
+  color: var(--accent-dark);
+  font-variant: normal;
+  font-style: normal;
+}
+
+.section .content img {
+  border-radius: 12px;
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Qualitative figure: narrower on desktop, full width on mobile */
+.section .content img.qual-fig {
+  width: 60%;
+}
+@media screen and (max-width: 768px) {
+  .section .content img.qual-fig { width: 100%; }
+}
+
+/* Method 단계별 보조 그림 (adapter 등) — 본문보다 살짝 작게 */
+.section .content img.method-fig {
+  max-width: 560px;
+  width: 100%;
+  box-shadow: none;
+  border: 1px solid #efeaff;
+}
+
+#BibTeX .title {
+  font-weight: 700;
+}
+#BibTeX pre {
+  background: #f6f5fb;
+  border: 1px solid #e7e3f5;
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+#BibTeX code {
+  font-family: 'SFMono-Regular', Consolas, 'Roboto Mono', monospace;
+  color: #2c2c30;
+  background: transparent;
+}
+
+.footer {
+  background: #faf9fe;
+  padding: 2.5rem 1.5rem 3rem;
+}
+.footer a {
+  color: var(--accent-dark);
+}
+
+@media screen and (max-width: 768px) {
+  .publication-title { font-size: 1.7rem !important; }
+  .author-block { display: inline-block; margin: 0.2rem 0.4rem; }
+  /* long affiliation names must wrap on narrow screens */
+  .affiliations .author-block { white-space: normal; }
+}
+
+.result-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0 0.4rem;
+}
+
+table.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+table.result-table th,
+table.result-table td {
+  padding: 7px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* numeric columns are tighter so wide tables (14 cols) fit the shared page width */
+table.result-table th:not(:first-child),
+table.result-table td:not(:first-child) {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+table.result-table th:first-child,
+table.result-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+/* the second header row's first cell (e.g. "Easy", "uniq.") is a :first-child
+   but should stay centered like the other sub-headers */
+table.result-table thead tr:not(:first-child) th:first-child {
+  text-align: center;
+}
+
+table.result-table thead th {
+  border-bottom: 2px solid #2c2c30;
+  font-weight: 600;
+  color: #2c2c30;
+}
+
+table.result-table tr.group-row td {
+  text-align: left;
+  font-weight: 600;
+  color: var(--accent-dark);
+  background: #f6f5fb;
+  border-top: 1px solid #e7e3f5;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+table.result-table tbody td {
+  border-bottom: 1px solid #eee;
+  color: #3a3a40;
+}
+
+table.result-table tr.ours-row td {
+  background: #f0edff;
+  border-bottom: 1px solid #ddd6ff;
+}
+/* only the row label is emphasized; numeric cells stay plain unless they are .best */
+table.result-table tr.ours-row td:first-child {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+table.result-table .best { font-weight: 700; color: var(--accent-dark); }
+
+/* delta row: green for gains over baseline, red for drops */
+table.result-table tr.delta-row td {
+  font-size: 0.86rem;
+  border-bottom: none;
+  color: var(--muted);
+}
+table.result-table .pos { color: #2e9e3f; font-weight: 600; }
+table.result-table .neg { color: #e53935; font-weight: 600; }
+
+.table-caption {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
+}
+.table-caption b { color: inherit; }
+
+
+@media screen and (max-width: 768px) {
+  table.result-table { font-size: 0.8rem; }
+  table.result-table th, table.result-table td { padding: 5px 6px; }
+}
+
+table.result-table th.grp-sep,
+table.result-table td.grp-sep {
+  border-left: 1px solid #e3e0ef;
+}
+table.result-table thead th {
+  font-size: 0.86rem;
+  padding: 5px 8px;
+}
+
+/* ---- Interactive qualitative-results viewer (iframe embed) ---- */
+.viewer-embed {
+  margin: 1.2rem 0 0.5rem;
+  border: 1px solid #e7e3f5;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.viewer-embed iframe {
+  display: block;
+  width: 100%;
+  height: 900px;          /* initial; JS auto-fits to content via postMessage */
+  border: 0;
+}
+
+#mapmyvisitors,
+#mapmyvisitors-widget,
+.mapmyvisitors-map-control,
+#clustrmaps-widget,
+#clstr_globe,
+a[href*="mapmyvisitors.com"],
+img[src*="mapmyvisitors.com"] {
+  position: fixed !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -2147483647 !important;
+}
+.jvectormap-tip {
+  display: none !important;
+}

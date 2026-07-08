@@ -1,562 +1,483 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding.">
+  <meta name="keywords" content="3D Visual Grounding, Panoramic Vision, Vision-Language Model, Scene Understanding">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PanoGrounder</title>
 
-<head lang="en">
-    <meta charset="UTF-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
-    <title>PanoGrounder</title>
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" type="image/png" href="./static/images/favicon.png">
 
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- <base href="/"> -->
-
-        <!--FACEBOOK-->
-    <meta property="og:image" content="https://choiseongho-h.github.io/PanoGrounder/img/teaser.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="800">
-    <meta property="og:image:height" content="600">
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://choiseongho-h.github.io/PanoGrounder/"/>
-    <meta property="og:title" content="PanoGrounder" />
-    <meta property="og:description" content="Project page for PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding." />
-
-        <!--TWITTER-->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PanoGrounder" />
-    <meta name="twitter:description" content="Project page for PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding." />
-    <meta name="twitter:image" content="https://choiseongho-h.github.io/PanoGrounder/img/teaser.png" />
-
-
-<!--     <link rel="apple-touch-icon" href="apple-touch-icon.png"> -->
-  <!-- <link rel="icon" type="image/png" href="img/seal_icon.png"> -->
-    <!-- Place favicon.ico in the root directory -->
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
-    <link rel="stylesheet" href="css/app.css">
-
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
-    
-    <script src="js/app.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
 </head>
-
 <body>
-    <div class="container" id="main">
-        <div class="row">
-            <h2 class="col-md-12 text-center">
-                <b>PanoGrounder</b>: Bridging 2D and 3D with Panoramic Scene Representations <br>for VLM-based 3D Visual Grounding</br> 
-                <!-- <small>
-                    ICCV 2025
-                </small> -->
-            </h2>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <a href="http://seongminjung.github.io">
-                          Seongmin Jung<sup>*1</sup>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/ChoiSeongHo-h">
-                            Seongho Choi<sup>*1</sup>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            Gunwoo Jeon<sup>1</sup>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://cvlab.postech.ac.kr/~mcho/">
-                            Minsu Cho<sup>2</sup>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://rvlab.snu.ac.kr/people/jwlim">
-                          Jongwoo Lim<sup>1</sup>
-                        </a>
-                    </li>
-                </ul>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <span class="venue-badge">ECCV 2026</span>
+
+          <h1 class="title is-1 publication-title">PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding</h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://seongminjung.github.io" target="_blank" rel="noopener">Seongmin Jung</a><sup>1</sup><sup class="eq">*</sup>,</span>
+            <span class="author-block"><a href="https://github.com/ChoiSeongHo-h" target="_blank" rel="noopener">Seongho Choi</a><sup>1,2</sup><sup class="eq">*</sup>,</span>
+            <span class="author-block"><a href="https://rvlab.snu.ac.kr/people" target="_blank" rel="noopener">Gunwoo Jeon</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://cvlab.postech.ac.kr/~mcho/" target="_blank" rel="noopener">Minsu Cho</a><sup>3</sup>,</span>
+            <span class="author-block">and <a href="https://rvlab.snu.ac.kr/people/jwlim" target="_blank" rel="noopener">Jongwoo Lim</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors affiliations">
+            <span class="author-block"><sup>1</sup>Seoul National University,</span>
+            <span class="author-block"><sup>2</sup>Robotics Lab, Hyundai Motor Company,</span>
+            <span class="author-block"><sup>3</sup>Pohang University of Science and Technology (POSTECH)</span>
+          </div>
+
+          <div class="publication-authors eq-note">* Equal contribution</div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2512.20907" target="_blank" rel="noopener"
+                   class="external-link button is-normal is-rounded">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              
+              <span class="link-block">
+                <a href="https://github.com/ChoiSeongHo-h/PanoGrounder" target="_blank" rel="noopener"
+                   class="external-link button is-normal is-rounded is-accent">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
             </div>
+          </div>
         </div>
-        
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <sup>1</sup>Seoul National University
-                    </li>
-                    <li>
-                        <sup>2</sup>Pohang University of Science and Technology (POSTECH)
-                    </li>
-                </ul>
-            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/teaser.png" alt="PanoGrounder teaser"/>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">PanoGrounder</span> localizes referred objects in 3D scenes by
+        leveraging panoramic renderings as a 2D&ndash;3D interface.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Explore Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Select a <b>scene</b> and a <b>text query</b> to explore
+            <span class="dnerf">PanoGrounder</span>'s grounding. The left view shows the predicted
+            3D box (green) against the ground truth (blue), while the right view shows the per-camera
+            panoramas with predicted 2D boxes and SAM masks.
+          </p>
+        </div>
+        <!-- Interactive qualitative results viewer (see results-viewer.html + static/data/) -->
+        <div class="viewer-embed">
+          <iframe src="./results-viewer.html" title="PanoGrounder interactive demo"
+                  loading="lazy" scrolling="no"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            3D Visual Grounding (3DVG) is a critical bridge from vision-language perception to
+            robotics, requiring both language understanding and 3D scene reasoning. Traditional
+            supervised models leverage explicit 3D geometry but exhibit limited generalization,
+            owing to the scarcity of 3D vision-language datasets and the limited reasoning
+            capabilities compared to modern vision-language models (VLMs).
+          </p>
+          <p>
+            We propose a generalizable 3DVG framework, <span class="dnerf">PanoGrounder</span>,
+            that couples multi-modal panoramic representation with pretrained 2D VLMs for strong
+            vision-language reasoning. Panoramic renderings, augmented with 3D semantic and
+            geometric features, serve as an intermediate representation between 2D and 3D, and offer
+            two major benefits: (i) they can be directly fed to VLMs with minimal adaptation and
+            (ii) they retain long-range object-to-object relations thanks to their 360-degree field
+            of view. We devise a three-stage pipeline that places a compact set of panoramic
+            viewpoints considering the scene layout and geometry, grounds a text query on each
+            panoramic rendering with a VLM, and fuses per-view predictions into a single 3D bounding
+            box via lifting.
+          </p>
+          <p>
+            Our approach achieves state-of-the-art results on ScanRefer and Nr3D, and demonstrates
+            strong generalization to unseen 3D datasets and text rephrasings.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">The PanoGrounder Framework</h2>
+
+        <div class="content has-text-centered">
+          <img src="./static/images/pipeline.png" alt="PanoGrounder pipeline"/>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            Given a renderable 3D scene (a triangle mesh or 3D Gaussian Splatting) and a text query,
+            <span class="dnerf">PanoGrounder</span> predicts the 3D bounding box of the referred
+            object, using panoramic renderings as a 2D&ndash;3D interface. The pipeline runs in three
+            stages.
+          </p>
         </div>
 
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <span style="font-size: 14px;">* Equal contribution</span>
-            </div>
+        <h3 class="title is-4">1. Structure-Aware Camera Placement</h3>
+        <div class="content has-text-justified">
+          <p>
+            Since panoramas are omnidirectional, we only choose camera <i>locations</i>. We greedily
+            select a compact viewpoint set&mdash;scored by ray coverage, distance-to-surface, and
+            distance-to-trajectory&mdash;covering each scene with only a few cameras.
+          </p>
         </div>
 
-        <div class="row">
-                <div class="col-md-4 col-md-offset-4 text-center">
-                    <ul class="nav nav-pills nav-justified">
-                        <li>
-                            <a href="https://arxiv.org/abs/2512.20907">
-                            <image src="img/panogrounder_paper_img.png" height="60px">
-                                <h4><strong>Paper</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://github.com/ChoiSeongHo-h/PanoGrounder">
-                            <image src="img/github.png" height="60px">
-                                <h4><strong>Code</strong></h4>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <h3 class="title is-4">2. Multi-Modal Panoramic VLM</h3>
+        <div class="content has-text-justified">
+          <p>
+            At each viewpoint we render <b>RGB</b>, <b>geometric</b> (range), and <b>semantic</b>
+            feature panoramas. The geometric and semantic cues are injected into selected VLM layers
+            through a lightweight Feature Adapter (a 2-layer MLP + a zero-initialized 1&times;1 convolution),
+            preserving the VLM's pretrained behavior while adding task-relevant signal. The VLM then
+            predicts a 2D box on each panorama. Training uses cross-entropy with an Earth Mover's
+            Distance (EMD) loss for distance-aware supervision.
+          </p>
+        </div>
+        <h3 class="title is-4">3. Visibility-Aware 3D Aggregation</h3>
+        <div class="content has-text-justified">
+          <p>
+            Per-view 2D predictions are lifted to metric 3D using rendered depth and camera
+            extrinsics. We pick the most reliable anchor view by cross-view consistency, fuse the
+            visible point sets, and fit an axis-aligned 3D box.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Quantitative Results</h2>
+
+        <h3 class="title is-4">3D Visual Grounding on Nr3D, Sr3D, and ScanRefer</h3>
+        <div class="content has-text-justified">
+          <p>
+            <span class="dnerf">PanoGrounder</span> achieves state-of-the-art or top results across
+            benchmarks. All methods here are trained on a single benchmark. ScanRefer reports
+            Acc@0.25 (IoU); ReferIt3D (Nr3D/Sr3D) reports Top-1 accuracy.
+          </p>
         </div>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Overview
-                </h3>
-                <div class="text-center">
-                    <img src="img/teaser.png" alt="Overview" style="max-width: 50%; height: auto;">
-                </div>
-            </div>
+        <div class="result-table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Method</th>
+                <th colspan="5" class="grp-sep">Nr3D</th>
+                <th colspan="5" class="grp-sep">Sr3D</th>
+                <th colspan="3" class="grp-sep">ScanRefer</th>
+              </tr>
+              <tr>
+                <th class="grp-sep">Easy</th><th>Hard</th><th>VD</th><th>VID</th><th>Overall</th>
+                <th class="grp-sep">Easy</th><th>Hard</th><th>VD</th><th>VID</th><th>Overall</th>
+                <th class="grp-sep">Unique</th><th>Multiple</th><th>Overall</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>BUTD-DETR</td>
+                <td class="grp-sep">60.7</td><td>48.4</td><td>46.0</td><td>58.0</td><td>54.6</td>
+                <td class="grp-sep">68.6</td><td>63.2</td><td>53.0</td><td>67.6</td><td>67.0</td>
+                <td class="grp-sep">84.2</td><td>46.6</td><td>52.2</td></tr>
+              <tr><td>ViL3DRel</td>
+                <td class="grp-sep">70.2</td><td>57.4</td><td>62.0</td><td>64.5</td><td>64.4</td>
+                <td class="grp-sep">74.9</td><td>67.9</td><td>63.8</td><td>73.2</td><td>72.8</td>
+                <td class="grp-sep">81.6</td><td>40.3</td><td>47.9</td></tr>
+              <tr><td>3D-VisTA</td>
+                <td class="grp-sep">65.9</td><td>49.4</td><td>53.7</td><td>59.4</td><td>57.5</td>
+                <td class="grp-sep">72.1</td><td>63.6</td><td>57.9</td><td>70.1</td><td>69.6</td>
+                <td class="grp-sep">77.4</td><td>38.7</td><td>45.9</td></tr>
+              <tr><td>MIKASA</td>
+                <td class="grp-sep">69.7</td><td>59.4</td><td>65.4</td><td>64.0</td><td>64.4</td>
+                <td class="grp-sep">78.6</td><td>67.3</td><td><span class="best">70.4</span></td><td>75.4</td><td>75.2</td>
+                <td class="grp-sep">&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+              <tr><td>MCLN</td>
+                <td class="grp-sep">&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>59.8</td>
+                <td class="grp-sep">&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>68.4</td>
+                <td class="grp-sep">86.9</td><td>52.0</td><td>57.2</td></tr>
+              <tr><td>PQ3D</td>
+                <td class="grp-sep">73.3</td><td>56.7</td><td>60.7</td><td>67.0</td><td>64.9</td>
+                <td class="grp-sep">78.8</td><td>68.2</td><td>51.5</td><td>76.7</td><td>75.6</td>
+                <td class="grp-sep">85.2</td><td>46.8</td><td>52.8</td></tr>
+              <tr><td>LIBA</td>
+                <td class="grp-sep">&ndash;</td><td>57.2</td><td>60.3</td><td>&ndash;</td><td>64.5</td>
+                <td class="grp-sep">&ndash;</td><td>70.2</td><td>61.7</td><td>&ndash;</td><td>75.8</td>
+                <td class="grp-sep">88.8</td><td>54.4</td><td>59.6</td></tr>
+              <tr><td>VGMamba</td>
+                <td class="grp-sep">&ndash;</td><td>61.4</td><td>&ndash;</td><td>&ndash;</td><td>68.3</td>
+                <td class="grp-sep">&ndash;</td><td><span class="best">74.4</span></td><td>&ndash;</td><td>&ndash;</td><td><span class="best">81.3</span></td>
+                <td class="grp-sep"><span class="best">91.9</span></td><td>54.8</td><td>60.0</td></tr>
+              <tr><td>ViewSRD</td>
+                <td class="grp-sep">75.3</td><td>64.8</td><td>68.6</td><td>70.6</td><td>69.9</td>
+                <td class="grp-sep">78.3</td><td>70.6</td><td>69.0</td><td>76.2</td><td>76.0</td>
+                <td class="grp-sep">82.1</td><td>37.4</td><td>45.4</td></tr>
+              <tr class="ours-row"><td>Ours</td>
+                <td class="grp-sep"><span class="best">82.2</span></td><td><span class="best">67.2</span></td><td><span class="best">70.5</span></td><td><span class="best">76.3</span></td><td><span class="best">74.6</span></td>
+                <td class="grp-sep"><span class="best">81.3</span></td><td>74.2</td><td>60.5</td><td><span class="best">80.0</span></td><td>79.1</td>
+                <td class="grp-sep">84.3</td><td><span class="best">55.3</span></td><td><span class="best">61.0</span></td></tr>
+            </tbody>
+          </table>
         </div>
-        
+        <p class="table-caption">
+          <b>Table 1.</b> Evaluation on Nr3D, Sr3D, and ScanRefer, with all methods trained on a
+          single benchmark. VD/VID denote the View-Dependent / View-Independent splits. ScanRefer
+          reports Acc@0.25 (IoU); ReferIt3D reports Top-1 accuracy. The <b>Ours</b> row is
+          highlighted; <b>bold</b> marks the best in each column.
+        </p>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Abstract
-                </h3>
-                <p class="text-justify">
-                    3D Visual Grounding (3DVG) is a critical bridge from vision-language perception to robotics, requiring both language understanding and 3D scene reasoning. Traditional supervised models leverage explicit 3D geometry but exhibit limited generalization, owing to the scarcity of 3D vision-language datasets and the limited reasoning capabilities compared to modern vision-language models (VLMs). We propose PanoGrounder, a generalizable 3DVG framework that couples multi-modal panoramic representation with pretrained 2D VLMs for strong vision-language reasoning. Panoramic renderings, augmented with 3D semantic and geometric features, serve as an intermediate representation between 2D and 3D, and offer two major benefits: (i) they can be directly fed to VLMs with minimal adaptation and (ii) they retain long-range object-to-object relations thanks to their 360-degree field of view. We devise a three-stage pipeline that places a compact set of panoramic viewpoints considering the scene layout and geometry, grounds a text query on each panoramic rendering with a VLM, and fuses per-view predictions into a single 3D bounding box via lifting. Our approach achieves state-of-the-art results on ScanRefer and Nr3D, and demonstrates superior generalization to unseen 3D datasets and text rephrasings.
-                </p>
-            </div>
-        </div>
-
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    PanoGrounder Framework
-                </h3>
-                <div class="text-center">
-                    <img src="img/panogrounder.png" alt="PanoGrounder Framework" style="max-width: 100%; height: auto;">
-                </div>
-            </div>
-        </div>
-            
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Results
-                </h3>
-                <h4 style="text-align: center; margin-bottom: 15px;">3D Visual Grounding Demonstration</h4>
-                <p class="text-center" style="margin-bottom: 20px; color: #666; font-style: italic;">
-                    Green boxes denote ground-truth objects, and red boxes denote predictions from PanoGrounder. Across diverse scenes and query types, PanoGrounder produces accurate and spatially consistent grounding results.
-                </p>
-                <div class="text-center" style="margin-bottom: 30px;">
-                    <img src="img/qualitative.png" alt="PanoGrounder Results Demo" style="max-width: 100%; height: auto;">
-                </div>
-                <h4 style="text-align: center; margin-bottom: 15px;">Evaluation on Nr3D, Sr3D, and ScanRefer</h4>
-                <p class="text-center" style="margin-bottom: 20px; color: #666; font-style: italic;">
-                    To ensure a fair comparison, we group methods by training regime: models trained on a single benchmark versus those trained on mixed datasets (e.g., ScanRefer + ReferIt3D). S+R denotes our model trained jointly on ScanRefer and ReferIt3D (Nr3D/Sr3D).
-                </p>
-
-                <style type="text/css">
-                .tg  {border-collapse:collapse;border-spacing:0;}
-                .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-                font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-                .tg .tg-c3ow { border-color:inherit; text-align:center; vertical-align:middle }
-                .tg .tg-0pky { border-color:inherit; text-align:center; vertical-align:middle; background-color: hsl(0, 0%, 95%)}
-                .tg .tg-7btt { border-color:inherit; font-weight:bold; text-align:center; vertical-align:middle; ; background-color: hsl(0, 0%, 95%) }
-                </style>
-                <table class="tg">
+        <h3 class="title is-4">Zero-Shot on Nr3D</h3>
+            <div class="result-table-wrap">
+              <table class="result-table">
                 <thead>
-                <tr>
-                    <th class="tg-7btt" rowspan="2" colspan="2">Method</th>
-                    <th class="tg-7btt" colspan="5">Nr3D</th>
-                    <th class="tg-7btt" colspan="5">Sr3D</th>
-                    <th class="tg-7btt" colspan="3">ScanRefer</th>
-                </tr>
-                <tr>
-                    <th class="tg-7btt">Easy</th>
-                    <th class="tg-7btt">Hard</th>
-                    <th class="tg-7btt">VD</th>
-                    <th class="tg-7btt">VID</th>
-                    <th class="tg-7btt">Overall</th>
-                    <th class="tg-7btt">Easy</th>
-                    <th class="tg-7btt">Hard</th>
-                    <th class="tg-7btt">VD</th>
-                    <th class="tg-7btt">VID</th>
-                    <th class="tg-7btt">Overall</th>
-                    <th class="tg-7btt">Unique</th>
-                    <th class="tg-7btt">Multiple</th>
-                    <th class="tg-7btt">Overall</th>
-                </tr>
+                  <tr>
+                    <th>Method</th><th>Backbone</th>
+                    <th>Easy</th><th>Hard</th><th>VD</th><th>VID</th><th>Overall</th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td class="tg-0pky" rowspan="12"><span style="font-weight: bold; transform: rotate(-90deg); display: inline-block; transform-origin: center;">Single Dataset</span></td>
-                    <td class="tg-0pky">BUTD-DETR</td>
-                    <td class="tg-c3ow">60.7</td>
-                    <td class="tg-c3ow">48.4</td>
-                    <td class="tg-c3ow">46.0</td>
-                    <td class="tg-c3ow">58.0</td>
-                    <td class="tg-c3ow">54.6</td>
-                    <td class="tg-c3ow">68.6</td>
-                    <td class="tg-c3ow">63.2</td>
-                    <td class="tg-c3ow">53.0</td>
-                    <td class="tg-c3ow">67.6</td>
-                    <td class="tg-c3ow">67.0</td>
-                    <td class="tg-c3ow">84.2</td>
-                    <td class="tg-c3ow">46.6</td>
-                    <td class="tg-c3ow">52.2</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">ViL3DRel</td>
-                    <td class="tg-c3ow">70.2</td>
-                    <td class="tg-c3ow">57.4</td>
-                    <td class="tg-c3ow">62.0</td>
-                    <td class="tg-c3ow">64.5</td>
-                    <td class="tg-c3ow">64.4</td>
-                    <td class="tg-c3ow">74.9</td>
-                    <td class="tg-c3ow">67.9</td>
-                    <td class="tg-c3ow">63.8</td>
-                    <td class="tg-c3ow">73.2</td>
-                    <td class="tg-c3ow">72.8</td>
-                    <td class="tg-c3ow">81.6</td>
-                    <td class="tg-c3ow">40.3</td>
-                    <td class="tg-c3ow">47.9</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">3D-VisTA</td>
-                    <td class="tg-c3ow">65.9</td>
-                    <td class="tg-c3ow">49.4</td>
-                    <td class="tg-c3ow">53.7</td>
-                    <td class="tg-c3ow">59.4</td>
-                    <td class="tg-c3ow">57.5</td>
-                    <td class="tg-c3ow">72.1</td>
-                    <td class="tg-c3ow">63.6</td>
-                    <td class="tg-c3ow">57.9</td>
-                    <td class="tg-c3ow">70.1</td>
-                    <td class="tg-c3ow">69.6</td>
-                    <td class="tg-c3ow">77.4</td>
-                    <td class="tg-c3ow">38.7</td>
-                    <td class="tg-c3ow">45.9</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">MIKASA</td>
-                    <td class="tg-c3ow">69.7</td>
-                    <td class="tg-c3ow">59.4</td>
-                    <td class="tg-c3ow">65.4</td>
-                    <td class="tg-c3ow">64.0</td>
-                    <td class="tg-c3ow">64.4</td>
-                    <td class="tg-c3ow">78.6</td>
-                    <td class="tg-c3ow">67.3</td>
-                    <td class="tg-c3ow"><b>70.4</b></td>
-                    <td class="tg-c3ow">75.4</td>
-                    <td class="tg-c3ow">75.2</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">GPS</td>
-                    <td class="tg-c3ow">67.0</td>
-                    <td class="tg-c3ow">50.9</td>
-                    <td class="tg-c3ow">55.8</td>
-                    <td class="tg-c3ow">59.8</td>
-                    <td class="tg-c3ow">58.7</td>
-                    <td class="tg-c3ow">70.5</td>
-                    <td class="tg-c3ow">63.4</td>
-                    <td class="tg-c3ow">53.1</td>
-                    <td class="tg-c3ow">69.0</td>
-                    <td class="tg-c3ow">68.4</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">MCLN</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">59.8</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">68.4</td>
-                    <td class="tg-c3ow">86.9</td>
-                    <td class="tg-c3ow">52.0</td>
-                    <td class="tg-c3ow">57.2</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">PQ3D</td>
-                    <td class="tg-c3ow">73.3</td>
-                    <td class="tg-c3ow">56.7</td>
-                    <td class="tg-c3ow">60.7</td>
-                    <td class="tg-c3ow">67.0</td>
-                    <td class="tg-c3ow">64.9</td>
-                    <td class="tg-c3ow"><u>78.8</u></td>
-                    <td class="tg-c3ow">68.2</td>
-                    <td class="tg-c3ow">51.5</td>
-                    <td class="tg-c3ow"><u>76.7</u></td>
-                    <td class="tg-c3ow">75.6</td>
-                    <td class="tg-c3ow">85.2</td>
-                    <td class="tg-c3ow">46.8</td>
-                    <td class="tg-c3ow">52.8</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">LIBA</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">57.2</td>
-                    <td class="tg-c3ow">60.3</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">64.5</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">70.2</td>
-                    <td class="tg-c3ow">61.7</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">75.8</td>
-                    <td class="tg-c3ow"><u>88.8</u></td>
-                    <td class="tg-c3ow">54.4</td>
-                    <td class="tg-c3ow">59.6</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">TSP3D</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">48.7</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">57.1</td>
-                    <td class="tg-c3ow">87.3</td>
-                    <td class="tg-c3ow">51.0</td>
-                    <td class="tg-c3ow">56.5</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">VGMamba</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">61.4</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">68.3</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow"><b>74.4</b></td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow"><b>81.3</b></td>
-                    <td class="tg-c3ow"><b>91.9</b></td>
-                    <td class="tg-c3ow"><u>54.8</u></td>
-                    <td class="tg-c3ow"><u>60.0</u></td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">ViewSRD</td>
-                    <td class="tg-c3ow"><u>75.3</u></td>
-                    <td class="tg-c3ow"><u>64.8</u></td>
-                    <td class="tg-c3ow"><u>68.6</u></td>
-                    <td class="tg-c3ow"><u>70.6</u></td>
-                    <td class="tg-c3ow"><u>69.9</u></td>
-                    <td class="tg-c3ow">78.3</td>
-                    <td class="tg-c3ow">70.6</td>
-                    <td class="tg-c3ow"><u>69.0</u></td>
-                    <td class="tg-c3ow">76.2</td>
-                    <td class="tg-c3ow">76.0</td>
-                    <td class="tg-c3ow">82.1</td>
-                    <td class="tg-c3ow">37.4</td>
-                    <td class="tg-c3ow">45.4</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky"><b>Ours</b></td>
-                    <td class="tg-c3ow"><b>82.2</b></td>
-                    <td class="tg-c3ow"><b>67.2</b></td>
-                    <td class="tg-c3ow"><b>70.5</b></td>
-                    <td class="tg-c3ow"><b>76.3</b></td>
-                    <td class="tg-c3ow"><b>74.6</b></td>
-                    <td class="tg-c3ow"><b>81.3</b></td>
-                    <td class="tg-c3ow"><u>74.2</u></td>
-                    <td class="tg-c3ow">60.5</td>
-                    <td class="tg-c3ow"><b>80.0</b></td>
-                    <td class="tg-c3ow"><u>79.1</u></td>
-                    <td class="tg-c3ow">84.3</td>
-                    <td class="tg-c3ow"><b>55.3</b></td>
-                    <td class="tg-c3ow"><b>61.0</b></td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky" rowspan="7"><span style="font-weight: bold; transform: rotate(-90deg); display: inline-block; transform-origin: center;">Multi Dataset</span></td>
-                    <td class="tg-0pky">3D-VisTA</td>
-                    <td class="tg-c3ow">72.1</td>
-                    <td class="tg-c3ow">56.7</td>
-                    <td class="tg-c3ow">61.5</td>
-                    <td class="tg-c3ow">65.1</td>
-                    <td class="tg-c3ow">64.2</td>
-                    <td class="tg-c3ow">78.8</td>
-                    <td class="tg-c3ow">71.3</td>
-                    <td class="tg-c3ow">58.9</td>
-                    <td class="tg-c3ow">77.3</td>
-                    <td class="tg-c3ow">76.4</td>
-                    <td class="tg-c3ow">81.6</td>
-                    <td class="tg-c3ow">43.7</td>
-                    <td class="tg-c3ow">50.6</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">GPS</td>
-                    <td class="tg-c3ow">72.5</td>
-                    <td class="tg-c3ow">57.8</td>
-                    <td class="tg-c3ow">56.9</td>
-                    <td class="tg-c3ow">67.9</td>
-                    <td class="tg-c3ow">64.9</td>
-                    <td class="tg-c3ow">80.1</td>
-                    <td class="tg-c3ow">71.6</td>
-                    <td class="tg-c3ow">62.8</td>
-                    <td class="tg-c3ow">78.2</td>
-                    <td class="tg-c3ow">77.5</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">PQ3D</td>
-                    <td class="tg-c3ow"><u>75.0</u></td>
-                    <td class="tg-c3ow"><u>58.7</u></td>
-                    <td class="tg-c3ow"><u>62.8</u></td>
-                    <td class="tg-c3ow">68.6</td>
-                    <td class="tg-c3ow"><u>66.7</u></td>
-                    <td class="tg-c3ow"><u>82.7</u></td>
-                    <td class="tg-c3ow">72.8</td>
-                    <td class="tg-c3ow">62.9</td>
-                    <td class="tg-c3ow">80.5</td>
-                    <td class="tg-c3ow">79.7</td>
-                    <td class="tg-c3ow"><u>86.7</u></td>
-                    <td class="tg-c3ow"><u>51.5</u></td>
-                    <td class="tg-c3ow">57.0</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">Chat-Scene</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow"><b>89.6</b></td>
-                    <td class="tg-c3ow">47.8</td>
-                    <td class="tg-c3ow">55.5</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">LLaVA-3D</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">50.1</td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky">UniVLG</td>
-                    <td class="tg-c3ow">73.3</td>
-                    <td class="tg-c3ow">57.0</td>
-                    <td class="tg-c3ow">55.1</td>
-                    <td class="tg-c3ow"><u>69.9</u></td>
-                    <td class="tg-c3ow">65.2</td>
-                    <td class="tg-c3ow"><b>84.4</b></td>
-                    <td class="tg-c3ow"><b>75.2</b></td>
-                    <td class="tg-c3ow"><u>66.2</u></td>
-                    <td class="tg-c3ow"><b>82.4</b></td>
-                    <td class="tg-c3ow"><b>81.7</b></td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow">-</td>
-                    <td class="tg-c3ow"><u>60.7</u></td>
-                </tr>
-                <tr>
-                    <td class="tg-0pky"><b>Ours <i>S+R</i></b></td>
-                    <td class="tg-c3ow"><b>84.1</b></td>
-                    <td class="tg-c3ow"><b>68.4</b></td>
-                    <td class="tg-c3ow"><b>72.9</b></td>
-                    <td class="tg-c3ow"><b>77.5</b></td>
-                    <td class="tg-c3ow"><b>76.1</b></td>
-                    <td class="tg-c3ow">82.3</td>
-                    <td class="tg-c3ow"><u>74.5</u></td>
-                    <td class="tg-c3ow"><b>66.6</b></td>
-                    <td class="tg-c3ow"><u>80.6</u></td>
-                    <td class="tg-c3ow"><u>79.9</u></td>
-                    <td class="tg-c3ow">85.0</td>
-                    <td class="tg-c3ow"><b>56.4</b></td>
-                    <td class="tg-c3ow"><b>62.0</b></td>
-                </tr>
-                </tbody></table>
+                  <tr><td>ZSVG3D</td><td>GPT-3.5-turbo</td><td>46.5</td><td>31.7</td><td>36.8</td><td>40.0</td><td>39.0</td></tr>
+                  <tr><td>SeeGround</td><td>Qwen2-VL-72B</td><td>54.5</td><td>38.3</td><td>42.3</td><td>48.2</td><td>46.1</td></tr>
+                  <tr><td>VLM-Grounder</td><td>GPT-4V</td><td>55.2</td><td>39.5</td><td>45.8</td><td>49.4</td><td>48.0</td></tr>
+                  <tr class="ours-row"><td>Ours</td><td>CogVLM-17B</td><td><span class="best">64.2</span></td><td><span class="best">42.7</span></td><td><span class="best">49.8</span></td><td><span class="best">54.7</span></td><td><span class="best">53.2</span></td></tr>
+                </tbody>
+              </table>
             </div>
-        </div>
-            
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Citation
-                </h3>
-                <div class="form-group col-md-10 col-md-offset-1">
-                    <textarea id="bibtex" class="form-control" readonly>
-@article{jungchoi2025panogrounder,
-    title={PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding},
-    author={Seongmin Jung and Seongho Choi and Gunwoo Jeon and Minsu Cho and Jongwoo Lim},
-    journal={arXiv preprint arXiv:2512.20907},
-    year={2025}
-}</textarea>
-                </div>
+            <p class="table-caption">
+              <b>Table 2.</b> Zero-shot on Nr3D. Without any fine-tuning, ours surpasses methods with
+              far larger backbones. <b>Bold</b> marks the best in each column.
+            </p>
+
+        <h3 class="title is-4">Cross-Dataset Generalization</h3>
+            <div class="result-table-wrap">
+              <table class="result-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2">Method</th>
+                    <th colspan="3" class="grp-sep">ScanRefer</th>
+                    <th colspan="3" class="grp-sep">ARKitScenes</th>
+                    <th colspan="3" class="grp-sep">3RScan</th>
+                  </tr>
+                  <tr>
+                    <th class="grp-sep">uniq.</th><th>mult.</th><th>over.</th>
+                    <th class="grp-sep">uniq.</th><th>mult.</th><th>over.</th>
+                    <th class="grp-sep">uniq.</th><th>mult.</th><th>over.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>ViL3DRel</td>
+                    <td class="grp-sep">92.0</td><td>51.8</td><td>59.6</td>
+                    <td class="grp-sep">57.2</td><td>21.1</td><td>28.3</td>
+                    <td class="grp-sep">71.8</td><td>31.3</td><td>36.8</td></tr>
+                  <tr><td>3D-VisTA</td>
+                    <td class="grp-sep">89.5</td><td>49.9</td><td>57.2</td>
+                    <td class="grp-sep">59.7</td><td>26.6</td><td>32.9</td>
+                    <td class="grp-sep">74.1</td><td>32.0</td><td>37.7</td></tr>
+                  <tr><td>BUTD-DETR*</td>
+                    <td class="grp-sep">92.5</td><td>52.6</td><td>58.5</td>
+                    <td class="grp-sep">66.3</td><td>30.6</td><td>36.1</td>
+                    <td class="grp-sep">&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+                  <tr><td>MCLN*</td>
+                    <td class="grp-sep"><span class="best">93.4</span></td><td>54.9</td><td>60.6</td>
+                    <td class="grp-sep">61.2</td><td>30.0</td><td>35.3</td>
+                    <td class="grp-sep">&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+                  <tr class="ours-row"><td>Ours</td>
+                    <td class="grp-sep">91.7</td><td><span class="best">58.5</span></td><td><span class="best">64.9</span></td>
+                    <td class="grp-sep"><span class="best">74.2</span></td><td><span class="best">48.0</span></td><td><span class="best">53.5</span></td>
+                    <td class="grp-sep"><span class="best">80.4</span></td><td><span class="best">37.7</span></td><td><span class="best">43.8</span></td></tr>
+                </tbody>
+              </table>
             </div>
+            <p class="table-caption">
+              <b>Table 3.</b> Trained on ScanRefer, evaluated on unseen ARKitScenes and 3RScan. All
+              methods use GT object segmentation; * additionally uses GT semantic labels. All baseline
+              results are re-run by us. <b>Bold</b> marks the best in each column.
+            </p>
+
+        <h3 class="title is-4">Robustness to Text Variants</h3>
+        <div class="content has-text-justified">
+          <p>
+            We probe linguistic robustness on ScanRefer by generating four variants of each query
+            with LLaMA&nbsp;3.3: <b>Para.</b> (paraphrased), <b>+Aff.</b> (an affordance/functional
+            description added), <b>+Aff.&minus;N</b> (<b>+Aff.</b> with the target noun removed), and
+            <b>Mask</b> (target noun replaced with &ldquo;object&rdquo;). As explicit class cues
+            disappear, <span class="dnerf">PanoGrounder</span>'s advantage grows
+            sharply&mdash;it must reason over spatial and contextual cues rather than lexical matching.
+          </p>
         </div>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Acknowledgements
-                </h3>
-                <p class="text-justify">
-                We thank the research community for providing the benchmarks and datasets used in this research. We thank Chunghyun Park for his helpful comments and technical advice during the development of the model.
-                    <br>
-                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a>.
-                </p>
-            </div>
+        <div class="result-table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Org.</th><th>Para.</th><th>+Aff.</th><th>+Aff.&minus;N</th><th>Mask</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ViL3DRel</td>
+                <td>59.6</td><td>41.5</td><td>9.7</td><td>6.5</td><td>22.9</td></tr>
+              <tr><td>3D-VisTA</td>
+                <td>57.2</td><td>52.9</td><td>50.4</td><td>28.3</td><td>28.5</td></tr>
+              <tr><td>BUTD-DETR*</td>
+                <td>58.5</td><td>53.4</td><td>55.1</td><td>35.5</td><td>27.3</td></tr>
+              <tr><td>MCLN*</td>
+                <td>60.6</td><td>54.6</td><td>55.7</td><td>35.7</td><td>31.5</td></tr>
+              <tr><td>PQ3D</td>
+                <td><span class="best">66.0</span></td><td><span class="best">63.3</span></td><td>58.6</td><td>35.8</td><td>33.3</td></tr>
+              <tr class="ours-row"><td>Ours</td>
+                <td>64.9</td><td>61.5</td><td><span class="best">61.3</span></td><td><span class="best">51.7</span></td><td><span class="best">41.8</span></td></tr>
+              <tr class="delta-row"><td>&Delta; (Ours &minus; PQ3D)</td>
+                <td class="neg">&minus;1.1</td><td class="neg">&minus;1.8</td>
+                <td class="pos">+2.7</td><td class="pos">+15.9</td><td class="pos">+8.5</td></tr>
+            </tbody>
+          </table>
         </div>
+        <p class="table-caption">
+          <b>Table 4.</b> Robustness to ScanRefer text variants (Top-1 accuracy). Four variants are
+          generated with LLaMA&nbsp;3.3. All methods use GT object segmentation; * additionally uses
+          GT semantic labels. All baseline results are re-run by us. <b>Bold</b> marks the best in
+          each column; the last row is PanoGrounder's gain over PQ3D.
+        </p>
+
+      </div>
     </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Qualitative Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Representative success cases on ScanRefer across a variety of room types (kitchens,
+            bathrooms, offices, and bedrooms). <span class="dnerf">PanoGrounder</span>'s predicted
+            boxes (<span style="color:#e53935; font-weight:600;">red</span>) align closely with the
+            ground-truth boxes (<span style="color:#2e9e3f; font-weight:600;">green</span>), even
+            when the target object is small (e.g., (f), (h)). Many queries require relational cues
+            such as &ldquo;A next to B&rdquo; or &ldquo;A above B&rdquo;, which
+            <span class="dnerf">PanoGrounder</span> reliably parses and grounds to the correct
+            instance in 3D.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <img src="./static/images/qual_gt.png" class="qual-fig"
+               alt="Qualitative comparison of PanoGrounder predictions (red) with ground-truth boxes (green) on ScanRefer"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    
+    <pre><code>@inproceedings{jungchoi2026panogrounder,
+  title={PanoGrounder: Bridging 2D and 3D with Panoramic Scene Representations for VLM-based 3D Visual Grounding},
+  author={Seongmin Jung and Seongho Choi and Gunwoo Jeon and Minsu Cho and Jongwoo Lim},
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a <a rel="license"
+              href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            The website template is borrowed from <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- auto-size the qualitative-results iframe to its content height -->
+<script>
+  window.addEventListener('message', function(e){
+    if (e.data && typeof e.data.pgViewerHeight === 'number'){
+      var f = document.querySelector('.viewer-embed iframe');
+      if (f) f.style.height = e.data.pgViewerHeight + 'px';
+    }
+  });
+</script>
+<script type="text/javascript" id="mapmyvisitors" src="//mapmyvisitors.com/map.js?d=DB_zd7MChYqyYs4xFJj7S4_pqsnnpG3Q-bCya-A9HFU&cl=ffffff&w=a"></script>
+
 </body>
 </html>

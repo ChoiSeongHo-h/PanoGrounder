@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PanoGrounder — Qualitative Results Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#6c5ce7;
+    --accent-dark:#4b3fc4;
+    --accent-soft:#efeaff;
+    --gt:#2d7dff;      /* GT  = blue  */
+    --pred:#25c26e;    /* pred = green */
+    --panel:#f7f7fb;
+    --border:#e6e6ef;
+    --text:#1d1d20;
+    --muted:#6b6b73;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:transparent}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);line-height:1.5}
+  .wrap{padding:12px}
+
+  /* ---- top controls ---- */
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .field label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--muted);margin-bottom:6px}
+  select{
+    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;
+    background:#fff;font:inherit;color:var(--text);cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236b6b7b' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+  }
+  select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  /* ---- query sentence ---- */
+  .query-box{
+    background:var(--accent-soft);border:1px solid #ddd7ff;border-radius:10px;
+    padding:14px 16px;margin-bottom:16px;font-size:1.02rem;font-weight:500;color:#2a2340;
+  }
+  .query-box .q-meta{display:block;font-size:.72rem;font-weight:600;color:var(--accent-dark);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+
+  /* ---- legend ---- */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;font-size:.82rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .swatch{width:14px;height:14px;border-radius:3px;display:inline-block}
+  /* bboxes are drawn as outlines on screen, so show them as outlined swatches */
+  .swatch.gt{background:transparent;border:2px solid var(--gt)}
+  .swatch.pred{background:transparent;border:2px solid var(--pred)}
+  .swatch.mask{background:rgba(255,60,60,.55)}
+  .swatch.cam{background:linear-gradient(90deg,#ff9f1c,#e83e8c,#9b5de5,#00bbf9)}
+
+  /* ---- main two-column ---- */
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+  @media (max-width:820px){.stage{grid-template-columns:1fr}.controls{grid-template-columns:1fr}}
+
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .panel-head{padding:9px 14px;font-size:.78rem;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;background:#fff}
+
+  /* 3D viewer */
+  #viewer3d{width:100%;height:460px;display:block;background:#0e0e14;cursor:grab}
+  @media (max-width:820px){#viewer3d{height:360px}}
+  #viewer3d:active{cursor:grabbing}
+  .hint{font-size:.7rem;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
+
+  /* right column: scrollable cam stack */
+  .cams{max-height:620px;overflow-y:auto;padding:8px}
+  .cam{margin-bottom:12px}
+  .cam:last-child{margin-bottom:0}
+  .cam-canvas{width:100%;display:block;border-radius:0 0 8px 8px;background:#111}
+
+  .status{padding:40px 16px;text-align:center;color:var(--muted);font-size:.9rem}
+  .spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls">
+    <div class="field">
+      <label for="sceneSel">Scene</label>
+      <select id="sceneSel"></select>
+    </div>
+    <div class="field">
+      <label for="querySel">Text query</label>
+      <select id="querySel"></select>
+    </div>
+  </div>
+
+  <div class="query-box" id="queryBox">
+    <span class="q-meta">Query</span>
+    <span id="queryText">—</span>
+  </div>
+
+  <div class="legend">
+    <span><i class="swatch gt"></i> GT bbox</span>
+    <span><i class="swatch pred"></i> Predicted bbox</span>
+    <span><i class="swatch mask"></i> Predicted SAM mask (panoramas only)</span>
+  </div>
+
+  <div class="stage">
+    <!-- LEFT: 3D viewer -->
+    <div class="panel">
+      <div class="panel-head">
+        <span>3D Scene</span>
+        <span class="hint">left-drag rotate · right-drag move · scroll zoom</span>
+      </div>
+      <canvas id="viewer3d"></canvas>
+    </div>
+
+    <!-- RIGHT: per-camera panoramas -->
+    <div class="panel">
+      <div class="panel-head">
+        <span>Panoramas</span>
+        <span class="hint" id="camCount"></span>
+      </div>
+      <div class="cams" id="cams">
+        <div class="status">Select a scene to begin.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Three.js via import map (works on a local server and GitHub Pages) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const DATA = './static/data';        // <-- data root relative to this file
+const GT_COLOR   = 0x2d7dff;         // blue
+const PRED_COLOR = 0x25c26e;         // green
+const PANO_W = 2000, PANO_H = 1000;
+
+// distinct colors for panorama cameras (avoid GT-blue / pred-green)
+const CAM_COLORS = ['#ff9f1c','#e83e8c','#9b5de5','#00bbf9','#f15bb5','#ffd23f','#ff6b6b','#c77dff'];
+function camColorHex(camId){
+  const i = parseInt(String(camId).replace(/\D/g,''), 10) || 0;
+  return CAM_COLORS[i % CAM_COLORS.length];
+}
+
+// ---------- state ----------
+let metadata = null;
+let currentBboxes = null;
+let currentScene = null;
+
+const sceneSel = document.getElementById('sceneSel');
+const querySel = document.getElementById('querySel');
+const queryText = document.getElementById('queryText');
+const camsEl = document.getElementById('cams');
+const camCountEl = document.getElementById('camCount');
+
+// ---------- 3D setup ----------
+const canvas = document.getElementById('viewer3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const scene3d = new THREE.Scene();
+scene3d.background = new THREE.Color(0x0e0e14);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
+camera.up.set(0, 0, 1); // ScanNet is Z-up
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.enablePan = true;             // translate the scene
+controls.screenSpacePanning = true;    // pan parallel to the screen (feels natural)
+controls.panSpeed = 0.9;
+// touch: one finger rotate, two fingers pan/zoom
+controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+
+// bright, mostly-flat lighting so vertex colors read close to the panorama images
+scene3d.add(new THREE.AmbientLight(0xffffff, 1.8));
+scene3d.add(new THREE.HemisphereLight(0xffffff, 0xd8dbe0, 1.1));
+const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+dir.position.set(1, 1, 2);
+scene3d.add(dir);
+const dir2 = new THREE.DirectionalLight(0xffffff, 0.6);   // fill from opposite side
+dir2.position.set(-1, -1, 1);
+scene3d.add(dir2);
+
+const gltfLoader = new GLTFLoader();
+let meshRoot = null;
+let boxHelpers = [];
+let camMarkers = [];
+
+function resizeRenderer(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (w === 0 || h === 0) return;
+  if (canvas.width !== w || canvas.height !== h){
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+}
+function animate(){
+  requestAnimationFrame(animate);
+  resizeRenderer();
+  controls.update();
+  renderer.render(scene3d, camera);
+}
+animate();
+
+function disposeMesh(){
+  if (meshRoot){
+    scene3d.remove(meshRoot);
+    meshRoot.traverse(o=>{
+      if (o.geometry) o.geometry.dispose();
+      if (o.material){
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m=>{ if(m.map) m.map.dispose(); m.dispose(); });
+      }
+    });
+    meshRoot = null;
+  }
+}
+function clearBoxes(){
+  boxHelpers.forEach(h=>scene3d.remove(h));
+  boxHelpers = [];
+}
+function clearCamMarkers(){
+  camMarkers.forEach(m=>{
+    scene3d.remove(m);
+    if (m.geometry) m.geometry.dispose();
+    if (m.material){ if (m.material.map) m.material.map.dispose(); m.material.dispose(); }
+  });
+  camMarkers = [];
+}
+// small billboarded text label for a camera marker
+function makeLabelSprite(text, hex){
+  const fs = 48, pad = 10;
+  const meas = document.createElement('canvas').getContext('2d');
+  meas.font = `700 ${fs}px Inter, Arial, sans-serif`;
+  const tw = Math.ceil(meas.measureText(text).width);
+  const c = document.createElement('canvas');
+  c.width = tw + pad*2; c.height = fs + pad*2;
+  const cx = c.getContext('2d');
+  cx.font = `700 ${fs}px Inter, Arial, sans-serif`;
+  cx.fillStyle = 'rgba(20,20,28,0.82)';
+  cx.fillRect(0, 0, c.width, c.height);
+  cx.fillStyle = hex; cx.textBaseline = 'middle'; cx.textAlign = 'center';
+  cx.fillText(text, c.width/2, c.height/2 + 2);
+  const tex = new THREE.CanvasTexture(c); tex.minFilter = THREE.LinearFilter;
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+  spr.scale.set(0.333*(c.width/c.height), 0.333, 1);
+  return spr;
+}
+// place a colored sphere + label at every panorama camera position
+function addCamMarkers(sceneId, sceneRadius){
+  clearCamMarkers();
+  const meta = metadata && metadata.scene_meta && metadata.scene_meta[sceneId];
+  const positions = meta && meta.cam_positions;
+  if (!positions) return;
+  const r = Math.max(0.09, sceneRadius * 0.014);
+  for (const camId of Object.keys(positions)){
+    const p = positions[camId];
+    const hex = camColorHex(camId);
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(r, 20, 16),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(hex), depthTest: false })
+    );
+    sphere.position.set(p[0], p[1], p[2]);
+    sphere.renderOrder = 999;
+    scene3d.add(sphere); camMarkers.push(sphere);
+    const label = makeLabelSprite(camId.replace('cam_', 'Cam '), hex);
+    label.position.set(p[0], p[1], p[2] + r + 0.28);
+    label.renderOrder = 1000;
+    scene3d.add(label); camMarkers.push(label);
+  }
+}
+
+async function loadMesh(sceneId){
+  disposeMesh();
+  clearBoxes();
+  clearCamMarkers();
+  const gltf = await gltfLoader.loadAsync(`${DATA}/${sceneId}/mesh.glb`);
+  meshRoot = gltf.scene;
+  // ScanNet meshes often import as metallic -> render dark without an env map.
+  // Force non-metallic/rough so the baked vertex colors show at full brightness.
+  meshRoot.traverse(o=>{
+    if (o.isMesh && o.material){
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      mats.forEach(m=>{
+        if ('metalness' in m) m.metalness = 0;
+        if ('roughness' in m) m.roughness = 1;
+        m.needsUpdate = true;
+      });
+    }
+  });
+  scene3d.add(meshRoot);
+
+  const box = new THREE.Box3().setFromObject(meshRoot);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z);
+  controls.target.copy(center);
+  camera.position.set(center.x + radius*1.1, center.y - radius*1.1, center.z + radius*0.9);
+  camera.near = radius / 100;
+  camera.far  = radius * 20;
+  camera.updateProjectionMatrix();
+  controls.update();
+
+  addCamMarkers(sceneId, radius);
+}
+
+function addBox3(minArr, maxArr, color){
+  const b = new THREE.Box3(
+    new THREE.Vector3(minArr[0], minArr[1], minArr[2]),
+    new THREE.Vector3(maxArr[0], maxArr[1], maxArr[2])
+  );
+  const helper = new THREE.Box3Helper(b, new THREE.Color(color));
+  helper.material.depthTest = false;
+  scene3d.add(helper);
+  boxHelpers.push(helper);
+}
+function render3dBoxes(entry){
+  clearBoxes();
+  if (entry.gt_bbox_3d)   addBox3(entry.gt_bbox_3d.min,   entry.gt_bbox_3d.max,   GT_COLOR);
+  if (entry.pred_bbox_3d) addBox3(entry.pred_bbox_3d.min, entry.pred_bbox_3d.max, PRED_COLOR);
+}
+
+// ---------- panorama overlay ----------
+function tintMask(maskImg){
+  const off = document.createElement('canvas');
+  off.width = maskImg.naturalWidth; off.height = maskImg.naturalHeight;
+  const octx = off.getContext('2d');
+  octx.drawImage(maskImg, 0, 0);
+  const data = octx.getImageData(0, 0, off.width, off.height);
+  const p = data.data;
+  for (let i=0;i<p.length;i+=4){
+    if (p[i] > 128){ p[i]=255; p[i+1]=48; p[i+2]=48; p[i+3]=140; }
+    else { p[i+3]=0; }
+  }
+  octx.putImageData(data, 0, 0);
+  return off;
+}
+function drawBox(ctx, box, color, dashed){
+  if (!box) return;
+  const [x0,y0,x1,y1] = box;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 5;
+  if (dashed) ctx.setLineDash([16,10]);
+  ctx.strokeRect(x0, y0, x1-x0, y1-y0);
+  ctx.restore();
+}
+function loadImg(src){
+  return new Promise((res,rej)=>{
+    const im = new Image();
+    im.onload = ()=>res(im);
+    im.onerror = ()=>rej(new Error('img fail: '+src));
+    im.src = src;
+  });
+}
+async function renderCam(sceneId, camId, camData){
+  const cardCanvas = document.createElement('canvas');
+  cardCanvas.width = PANO_W; cardCanvas.height = PANO_H;
+  cardCanvas.className = 'cam-canvas';
+  const ctx = cardCanvas.getContext('2d');
+
+  const pano = await loadImg(`${DATA}/${sceneId}/panoramas/${camId}.jpg`);
+  ctx.drawImage(pano, 0, 0, PANO_W, PANO_H);
+
+  if (camData.mask){
+    try{
+      const maskImg = await loadImg(`${DATA}/${sceneId}/masks/${camData.mask}`);
+      ctx.drawImage(tintMask(maskImg), 0, 0, PANO_W, PANO_H);
+    }catch(e){}
+  }
+  drawBox(ctx, camData.gt_bbox_2d, '#2d7dff', true);
+  drawBox(ctx, camData.pred_bbox_2d, '#25c26e', false);
+  return cardCanvas;
+}
+async function renderPanoramas(sceneId, entry){
+  camsEl.innerHTML = '<div class="status"><span class="spinner"></span>Rendering cameras…</div>';
+  const camIds = Object.keys(entry.cams);
+  camCountEl.textContent = camIds.length + (camIds.length===1?' camera':' cameras');
+
+  const frag = document.createDocumentFragment();
+  for (const camId of camIds){
+    const cam = document.createElement('div');
+    cam.className = 'cam';
+    const label = document.createElement('div');
+    label.className = 'panel-head';
+    label.style.borderRadius = '8px 8px 0 0';
+    label.innerHTML = `<span><i style="display:inline-block;width:11px;height:11px;border-radius:50%;`
+      + `background:${camColorHex(camId)};margin-right:7px;vertical-align:middle"></i>`
+      + `${camId.replace('cam_','Cam ')}</span>`;
+    cam.appendChild(label);
+    try{
+      cam.appendChild(await renderCam(sceneId, camId, entry.cams[camId]));
+    }catch(e){
+      const err = document.createElement('div');
+      err.className = 'status'; err.textContent = 'Failed to load '+camId;
+      cam.appendChild(err);
+    }
+    frag.appendChild(cam);
+  }
+  camsEl.innerHTML = '';
+  camsEl.appendChild(frag);
+}
+
+// ---------- selection ----------
+function populateQueries(){
+  querySel.innerHTML = '';
+  const ids = Object.keys(currentBboxes).sort((a,b)=>Number(a)-Number(b));
+  for (const id of ids){
+    const opt = document.createElement('option');
+    opt.value = id;
+    const desc = currentBboxes[id].description || '';
+    opt.textContent = (desc.length > 85 ? desc.slice(0,85)+'…' : desc);
+    querySel.appendChild(opt);
+  }
+}
+async function onQueryChange(){
+  const id = querySel.value;
+  if (!id || !currentBboxes[id]) return;
+  const entry = currentBboxes[id];
+  queryText.textContent = entry.description || '(no description)';
+  render3dBoxes(entry);
+  await renderPanoramas(currentScene, entry);
+}
+async function onSceneChange(){
+  const sceneId = sceneSel.value;
+  currentScene = sceneId;
+  queryText.textContent = 'Loading…';
+  camsEl.innerHTML = '<div class="status"><span class="spinner"></span>Loading scene…</div>';
+  try{
+    const [bboxes] = await Promise.all([
+      fetch(`${DATA}/${sceneId}/bboxes.json`).then(r=>r.json()),
+      loadMesh(sceneId),
+    ]);
+    currentBboxes = bboxes;
+    populateQueries();
+    await onQueryChange();
+  }catch(e){
+    camsEl.innerHTML = `<div class="status">Error loading ${sceneId}: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+async function init(){
+  try{
+    metadata = await fetch(`${DATA}/metadata.json`).then(r=>r.json());
+  }catch(e){
+    document.getElementById('queryBox').innerHTML =
+      '<b>Could not load data.</b> Serve this page over HTTP (VS Code “Live Preview” or a static server), not file://.';
+    return;
+  }
+  for (const s of [...metadata.scenes].sort()){   // sort scenes by id (zero-padded = numeric)
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    sceneSel.appendChild(opt);
+  }
+  sceneSel.addEventListener('change', onSceneChange);
+  querySel.addEventListener('change', onQueryChange);
+  await onSceneChange();
+}
+init();
+
+// ---------- report height to parent so the <iframe> can auto-size ----------
+function postHeight(){
+  // measure the actual content bottom (.wrap) rather than documentElement.scrollHeight,
+  // which can over-report when the two stage panels differ in height
+  const wrap = document.querySelector('.wrap');
+  const h = wrap ? Math.ceil(wrap.getBoundingClientRect().bottom) : document.documentElement.scrollHeight;
+  try{ parent.postMessage({ pgViewerHeight: h }, '*'); }catch(e){}
+}
+new ResizeObserver(postHeight).observe(document.body);
+window.addEventListener('load', postHeight);
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# local dev helper (not needed for GitHub Pages)
+serve.ps1
